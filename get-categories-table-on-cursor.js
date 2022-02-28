@@ -26,7 +26,6 @@ thumb=getThumb(imgid);
 else
 thumb="";
 thumb=`<img src="${thumb}" width=150 height=150></img>`;
-return '<a class="blogcard-wrap internal-blogcard-wrap a-wrap cf" href="'+data["link"]+'"><div class="blogcard internal-blogcard ib-left cf"><figure class="blogcard-thumbnail internal-blogcard-thumbnail">'+thumb+'</figure><div class="blogcard-content internal-blogcard-content"><div class="blogcard-title internal-blogcard-title">'+data["title"]["rendered"]+'</div><div class="blogcard-snippet internal-blogcard-snippet">'+data["excerpt"]["rendered"]+'</div></div></div></a>`;
 return `<a class="blogcard-wrap internal-blogcard-wrap a-wrap cf" href="${data["link"]}"><div class="blogcard internal-blogcard ib-left cf"><figure class="blogcard-thumbnail internal-blogcard-thumbnail">${thumb}</figure><div class="blogcard-content internal-blogcard-content"><div class="blogcard-title internal-blogcard-title">${data["title"]["rendered"]}</div><div class="blogcard-snippet internal-blogcard-snippet">${data["excerpt"]["rendered"]}</div></div></div></a>`;
 }
 function getPosts(query,callback,n=3){
