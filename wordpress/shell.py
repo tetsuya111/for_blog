@@ -7,6 +7,7 @@ import docopt
 import zlib
 import json
 import random
+import os
 
 def hashurl(url):
 	return zlib.adler32(url.encode())
@@ -30,6 +31,7 @@ class Docs:
 	TWEET="""
 	Usage:
 		tweet (r|random) [(-p <params>)]
+		tweet (r|random) 2 [(-p <params>)]
 	
 	Options:
 		params : <key>:<vaue>,...
@@ -38,16 +40,8 @@ class Docs:
 	Usage:
 		tweet_shell [<args>...]
 	"""
-	HELP="""
-		get
-		append
-		search
-		tweet
-		tweet_shell
-	"""
 
 class Command:
-	HELP=("H","HELP")
 	GET=("G","GET")
 	TWEET=("TW","TWEET")
 	APPEND=("A","APPEND")
@@ -70,9 +64,7 @@ class Shell(ksh.BaseShell3):
 			return False
 		return True
 	def _execQuery(self,query,output):
-		if query.command in Command.HELP:
-			print(Docs.HELP,file=output)
-		elif query.command in Command.GET:
+		if query.command in Command.GET:
 			args=docopt.docopt(Docs.GET,query.args)
 			if not self.checkUrl(output):
 				return
@@ -93,18 +85,35 @@ class Shell(ksh.BaseShell3):
 					ts set bot ...
 				""",file=output)
 					return
-				if args["-p"]:
-					params=args["<params>"]
-					params=dict(map(lambda data:data.split(":",1),params.split(",")))
+				if args["2"]:
+					if args["-p"]:
+						params=args["<params>"]
+						params=dict(map(lambda data:data.split(":",1),params.split(",")))
+					else:
+						params={}
+					data=list(api.getPosts(self.url,params=params))
+					print(data)
+					if not data:
+						return
+					data=random.sample(data,1)[0]
+					tw=tweet.Tweet2.make2(self.url,data)
+					tw.do(bot)
+					for imagefile in tw.imagefiles:
+						os.remove(imagefile)
 				else:
-					params={}
-				data=list(api.getPosts(self.url,params=params))
-				if not data:
-					return
-				data=random.sample(data,1)[0]
-				tw=tweet.Tweet1.make2(self.url,data)
-				print(tw,tw.text)
-				tw.do(bot)
+					if args["-p"]:
+						params=args["<params>"]
+						params=dict(map(lambda data:data.split(":",1),params.split(",")))
+					else:
+						params={}
+					data=list(api.getPosts(self.url,params=params))
+					print(data)
+					if not data:
+						return
+					data=random.sample(data,1)[0]
+					tw=tweet.Tweet1.make2(self.url,data)
+					#print(tw,tw.text)
+					tw.do(bot)
 
 		elif query.command in Command.APPEND:
 			args=docopt.docopt(Docs.APPEND,query.args)
